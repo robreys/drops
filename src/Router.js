@@ -11,23 +11,26 @@ import DropEdit from './components/DropEdit';
 import DropCreate from './components/DropCreate';
 
 const TabIcon = ({ selected, title }) => {
+  const { tabStyle, selectedTabStyle } = styles;
 
   if (selected) {
     return (
-      <View styleName="flexible stretch vertical h-center v-center" style={{ backgroundColor: '#212121' }}>
+      <View styleName="flexible stretch vertical h-center v-center" style={selectedTabStyle}>
         <Subtitle styleName="bright">{title}</Subtitle>
       </View>
     );
   }
 
   return (
-      <View styleName="flexible stretch vertical h-center v-center" style={{ backgroundColor: '#BDBDBD' }}>
+      <View styleName="flexible stretch vertical h-center v-center" style={tabStyle}>
         <Subtitle styleName="bright">{title}</Subtitle>
       </View>
   );
 };
 
-const RouterComponent = () => {
+export default () => {
+  const { sceneStyle, sceneWithTabBarStyle } = styles;
+
   return (
     <Router navigationBarStyle={{ backgroundColor: '#212121' }} titleStyle={{ color: '#fff' }}>
       <Scene key='auth'>
@@ -44,16 +47,16 @@ const RouterComponent = () => {
 
           {/* locate tab */}
           <Scene key='locate' title='LOCATE' icon={TabIcon} >
-            <Scene key='nearbyDropList' title='Nearby' component={NearbyDropList} style={{ paddingTop: 50, marginBottom: 50 }} />
-            <Scene key='dropDetail' title='Detail' component={DropDetail} style={{ paddingTop: 50 }} hideTabBar />
-            <Scene key='dropContent' title='Content' component={DropContent} style={{ paddingTop: 50 }} />
+            <Scene key='nearbyDropList' title='Nearby' component={NearbyDropList} style={sceneWithTabBarStyle} />
+            <Scene key='dropDetail' title='Detail' component={DropDetail} style={sceneStyle} hideTabBar />
+            <Scene key='dropContent' title='Content' component={DropContent} style={sceneStyle} />
           </Scene>
 
           {/* manage tab */}
           <Scene key='manage' title='MANAGE' icon={TabIcon} initial>
-            <Scene key='libraryDropList' title='Library' rightTitle="NEW" onRight={() => Actions.dropCreate()} component={LibraryDropList} style={{ paddingTop: 50, marginBottom: 50 }} />
-            <Scene key='dropEdit' title='Edit' rightTitle="SAVE" onRight={() => {}} component={DropEdit} style={{ paddingTop: 50 }} hideTabBar />
-            <Scene key='dropCreate' title='Create' rightTitle="SAVE" onRight={() => {}} component={DropCreate} style={{ paddingTop: 50 }} hideTabBar />
+            <Scene key='libraryDropList' title='Library' rightTitle="NEW" onRight={() => Actions.dropCreate()} component={LibraryDropList} style={sceneWithTabBarStyle} />
+            <Scene key='dropEdit' title='Edit' rightTitle="SAVE" onRight={() => {}} component={DropEdit} style={sceneStyle} hideTabBar />
+            <Scene key='dropCreate' title='Create' rightTitle="SAVE" onRight={() => {}} component={DropCreate} style={sceneStyle} hideTabBar />
           </Scene>
         </Scene>
       </Scene>
@@ -61,4 +64,18 @@ const RouterComponent = () => {
   );
 };
 
-export default RouterComponent;
+const styles = {
+  tabStyle: {
+
+  },
+  selectedTabStyle: {
+    backgroundColor: '#212121'
+  },
+  sceneStyle: {
+    paddingTop: 50
+  },
+  sceneWithTabBarStyle: {
+    paddingTop: 50,
+    marginBottom: 50
+  }
+};

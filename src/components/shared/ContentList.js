@@ -60,7 +60,7 @@ export default class extends Component {
       }
 
       return (
-        <Lightbox onClose={() => {}}>
+        <Lightbox>
           <View styleName="flexible vertical v-center h-center">
             {imageComponent}
           </View>
@@ -148,6 +148,7 @@ export default class extends Component {
       <View styleName="sm-gutter flexible vertical v-center h-center">
         <Title styleName="lg-gutter">no content</Title>
         {this.renderAdd(editable)}
+        {this.renderForm(editable)}
       </View>
     );
   }
