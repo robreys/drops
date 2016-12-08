@@ -66,7 +66,7 @@ export default () => {
 
 const styles = {
   tabStyle: {
-
+    backgroundColor: '#9E9E9E'
   },
   selectedTabStyle: {
     backgroundColor: '#212121'
