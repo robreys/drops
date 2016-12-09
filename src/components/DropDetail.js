@@ -51,7 +51,7 @@ export default class extends Component {
         <View styleName="sm-gutter">
           <Button
             styleName="full-width dark"
-            onPress={() => Actions.dropContent({ content })}
+            onPress={() => Actions.dropContent({ content, dropTitle: title })}
           >
             <Text>VIEW CONTENT</Text>
           </Button>

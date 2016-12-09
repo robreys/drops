@@ -93,7 +93,7 @@ export default class extends Component {
     }
 
     return (
-      <View style={rowStyle}>
+      <View styleName="sm-gutter-top">
         {content}
       </View>
     );

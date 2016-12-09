@@ -10,7 +10,7 @@ import DropContent from './components/DropContent';
 import DropEdit from './components/DropEdit';
 import DropCreate from './components/DropCreate';
 
-const TabIcon = ({ selected, title }) => {
+const tabIcon = ({ selected, title }) => {
   const { tabStyle, selectedTabStyle } = styles;
 
   if (selected) {
@@ -28,14 +28,34 @@ const TabIcon = ({ selected, title }) => {
   );
 };
 
+const getTitle = (state) => {
+  const { sceneKey, title } = state;
+
+  switch (sceneKey) {
+    case 'dropDetail':
+      return `${title} (${state.drop.title})`;
+    case 'dropContent':
+      return `${title} (${state.dropTitle})`;
+    case 'dropEdit':
+      return `${title} (${state.drop.title})`;
+    default:
+      return state.title;
+  }
+};
+
 export default () => {
-  const { sceneStyle, sceneWithTabBarStyle } = styles;
+  const { 
+    navBarStyle,
+    titleStyle,
+    sceneStyle, 
+    sceneWithTabBarStyle
+  } = styles;
 
   return (
-    <Router navigationBarStyle={{ backgroundColor: '#212121' }} titleStyle={{ color: '#fff' }}>
+    <Router navigationBarStyle={navBarStyle} titleStyle={titleStyle} getTitle={getTitle}>
       <Scene key='auth'>
         <Scene key='login' title='Log In' component={LogInForm} />
-        <Scene key='signUp' title='Sign Up' component={SignUpForm} style={{ paddingTop: 50 }} />
+        <Scene key='signUp' title='Sign Up' component={SignUpForm} />
       </Scene>
 
       <Scene key='home' initial>
@@ -46,14 +66,14 @@ export default () => {
         >
 
           {/* locate tab */}
-          <Scene key='locate' title='LOCATE' icon={TabIcon} >
+          <Scene key='locate' title='LOCATE' icon={tabIcon} >
             <Scene key='nearbyDropList' title='Nearby' component={NearbyDropList} style={sceneWithTabBarStyle} />
             <Scene key='dropDetail' title='Detail' component={DropDetail} style={sceneStyle} hideTabBar />
             <Scene key='dropContent' title='Content' component={DropContent} style={sceneStyle} />
           </Scene>
 
           {/* manage tab */}
-          <Scene key='manage' title='MANAGE' icon={TabIcon} initial>
+          <Scene key='manage' title='MANAGE' icon={tabIcon} initial>
             <Scene key='libraryDropList' title='Library' rightTitle="NEW" onRight={() => Actions.dropCreate()} component={LibraryDropList} style={sceneWithTabBarStyle} />
             <Scene key='dropEdit' title='Edit' rightTitle="SAVE" onRight={() => {}} component={DropEdit} style={sceneStyle} hideTabBar />
             <Scene key='dropCreate' title='Create' rightTitle="SAVE" onRight={() => {}} component={DropCreate} style={sceneStyle} hideTabBar />
@@ -65,6 +85,12 @@ export default () => {
 };
 
 const styles = {
+  navBarStyle: {
+    backgroundColor: '#212121'
+  },
+  titleStyle: {
+    color: '#fff'
+  },
   tabStyle: {
     backgroundColor: '#9E9E9E'
   },
