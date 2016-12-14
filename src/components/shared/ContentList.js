@@ -1,38 +1,37 @@
 import React, { Component } from 'react';
-import { View, Row, Tile, Title, Text, Image, Button, ListView, Lightbox } from '@shoutem/ui';
+import { connect } from 'react-redux';
+import { View, Row, Title, Text, Image, Button, ListView, Lightbox } from '@shoutem/ui';
+import { addContent, editContent } from '../../actions';
 import ContentForm from './ContentForm';
 
-export default class extends Component {
-  state = { 
-    formEdit: true,
-    formVisible: false,
-    formContent: {
-      message: '',
-      image: ''
-    }
-  };
+class ContentList extends Component {
+  // state = { 
+  //   formEdit: true,
+  //   formVisible: false,
+  //   formContent: {}
+  // };
 
-  showEditForm(item) {
-    this.setState({ 
-      formEdit: true,
-      formContent: item,
-      formVisible: true
-    });
-  }
+  // showEditForm(item) {
+  //   this.setState({ 
+  //     formEdit: true,
+  //     formContent: item,
+  //     formVisible: true
+  //   });
+  // }
 
-  showAddForm() {
-    this.setState({
-      formEdit: false,
-      formContent: {},
-      formVisible: true
-    });
-  }
+  // showAddForm() {
+  //   this.setState({
+  //     formEdit: false,
+  //     formContent: {},
+  //     formVisible: true
+  //   });
+  // }
 
-  closeForm() {
-    this.setState({
-      formVisible: false
-    });
-  }
+  // closeForm() {
+  //   this.setState({
+  //     formVisible: false
+  //   });
+  // }
 
   renderMessage({ message }) {
     if (message) {
@@ -44,7 +43,9 @@ export default class extends Component {
     }
   }
 
-  renderImage({ image }, editable) {
+  renderImage({ image }) {
+    const { editable } = this.props;
+
     if (image) {
       const imageComponent = (
         <View style={{ marginBottom: 0 }}>
@@ -69,13 +70,42 @@ export default class extends Component {
     }
   }
 
-  renderRow({ item, editable }) {
+
+  renderForm() {
+    const { editable } = this.props;
+
+    if (editable) {
+      return (
+        <ContentForm />
+      );
+    }
+  }
+
+  renderAdd() {
+    const { editable } = this.props;
+
+    if (editable) {
+      return (
+        <View styleName="horizontal">
+            <Button
+              styleName="full-width dark"
+              onPress={() => this.props.addContent()}
+            >
+              <Text>ADD CONTENT</Text>
+            </Button>
+        </View>
+      );
+    }
+  }
+
+  renderRow(item) {
+    const { editable } = this.props;
     const { rowStyle } = styles;
 
     let content = (
-      <Row style={{ padding: 0}}>
+      <Row style={rowStyle}>
         <View styleName="vertical">
-          {this.renderImage(item, editable)}
+          {this.renderImage(item)}
           {this.renderMessage(item)}
         </View>
       </Row>
@@ -85,7 +115,7 @@ export default class extends Component {
       content = ( 
         <Button
           styleName="tight clear"
-          onPress={() => { this.showEditForm(item); }}
+          onPress={() => this.props.editContent({ item })}
         > 
           {content}
         </Button>
@@ -99,47 +129,18 @@ export default class extends Component {
     );
   }
 
-  renderForm(editable) {
-    if (editable) {
-      return (
-        <ContentForm 
-          edit={this.state.formEdit}
-          onComplete={this.closeForm.bind(this)}
-          onCancel={this.closeForm.bind(this)}
-          visible={this.state.formVisible}
-          content={this.state.formContent}
-        />
-      );
-    }
-  }
-
-  renderAdd(editable) {
-    if (editable) {
-      return (
-        <View styleName="horizontal">
-            <Button
-              styleName="full-width dark"
-              onPress={this.showAddForm.bind(this)}
-            >
-              <Text>ADD CONTENT</Text>
-            </Button>
-        </View>
-      );
-    }
-  }
-
   render() {
-    const { content, editable } = this.props;
+    const { content } = this.props;
 
     if (content) {
       return (
         <View styleName="sm-gutter-left sm-gutter-right sm-gutter-bottom rounded-corners">
           <ListView
-            renderRow={(item) => this.renderRow({ item, editable })}
+            renderRow={(item) => this.renderRow.bind(this)(item)}
             data={content}
           />
-          {this.renderAdd(editable)}
-          {this.renderForm(editable)}
+          {this.renderAdd()}
+          {this.renderForm()}
         </View>
       );
     }
@@ -147,8 +148,8 @@ export default class extends Component {
     return (
       <View styleName="sm-gutter flexible vertical v-center h-center">
         <Title styleName="lg-gutter">no content</Title>
-        {this.renderAdd(editable)}
-        {this.renderForm(editable)}
+        {this.renderAdd()}
+        {this.renderForm()}
       </View>
     );
   }
@@ -156,6 +157,8 @@ export default class extends Component {
 
 const styles = {
   rowStyle: {
-    marginTop: 15
+    padding: 0
   }
 };
+
+export default connect(null, { addContent, editContent })(ContentList);

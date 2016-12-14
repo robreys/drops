@@ -43,7 +43,12 @@ const getTitle = (state) => {
   }
 };
 
-export default () => {
+const onDropSave = () => {
+  console.log(this);
+  console.log(this.get());
+};
+
+export default ({ store }) => {
   const { 
     navBarStyle,
     titleStyle,
@@ -58,7 +63,7 @@ export default () => {
         <Scene key='signUp' title='Sign Up' component={SignUpForm} />
       </Scene>
 
-      <Scene key='home' initial>
+      <Scene key='home'>
         {/* tab container */}
         <Scene
           key='tabbar'
@@ -66,7 +71,7 @@ export default () => {
         >
 
           {/* locate tab */}
-          <Scene key='locate' title='LOCATE' icon={tabIcon} >
+          <Scene key='locate' title='LOCATE' icon={tabIcon}>
             <Scene key='nearbyDropList' title='Nearby' component={NearbyDropList} style={sceneWithTabBarStyle} />
             <Scene key='dropDetail' title='Detail' component={DropDetail} style={sceneStyle} hideTabBar />
             <Scene key='dropContent' title='Content' component={DropContent} style={sceneStyle} />
@@ -75,8 +80,8 @@ export default () => {
           {/* manage tab */}
           <Scene key='manage' title='MANAGE' icon={tabIcon} initial>
             <Scene key='libraryDropList' title='Library' rightTitle="NEW" onRight={() => Actions.dropCreate()} component={LibraryDropList} style={sceneWithTabBarStyle} />
-            <Scene key='dropEdit' title='Edit' rightTitle="SAVE" onRight={() => {}} component={DropEdit} style={sceneStyle} hideTabBar />
-            <Scene key='dropCreate' title='Create' rightTitle="SAVE" onRight={() => {}} component={DropCreate} style={sceneStyle} hideTabBar />
+            <Scene key='dropEdit' title='Edit' rightTitle="SAVE" onRight={onDropSave.bind(store)} component={DropEdit} style={sceneStyle} hideTabBar />
+            <Scene key='dropCreate' title='Create' rightTitle="SAVE" onRight={onDropSave.bind(store)} component={DropCreate} style={sceneStyle} hideTabBar />
           </Scene>
         </Scene>
       </Scene>
