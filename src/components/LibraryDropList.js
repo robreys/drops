@@ -19,7 +19,6 @@ class LibraryDropList extends Component {
   }
 
   createDropList({ libraryDrops }) {
-    console.log(libraryDrops);
     this.dropList = libraryDrops;
   }
 

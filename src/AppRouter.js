@@ -47,9 +47,9 @@ const getTitle = (state) => {
 
 class AppRouter extends Component {
   onDropSave() {
-    const { fbref, title, description, background, content } = this.props;
+    const { fbref, location, title, description, background, content } = this.props;
     
-    this.props.dropSave({ fbref, title, description, background, content });
+    this.props.dropSave({ fbref, location, title, description, background, content });
   }
 
   render() {
@@ -95,9 +95,9 @@ class AppRouter extends Component {
 }
 
 const mapStateToProps = state => {
- const { fbref, title, description, background, content } = state.dropForm;
+ const { fbref, location, title, description, background, content } = state.dropForm;
 
- return { fbref, title, description, background, content };
+ return { fbref, location, title, description, background, content };
 };
 
 export default connect(mapStateToProps, { dropSave })(AppRouter);

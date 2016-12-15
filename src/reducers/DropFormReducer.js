@@ -1,5 +1,4 @@
 import {
-  DROP_SET_REF,
   DROP_UPDATE,
   DROP_EDIT_CONTENT,
   DROP_ADD_CONTENT,
@@ -13,6 +12,7 @@ import {
 
 const INITIAL_STATE = {
     fbref: null,
+    location: null,
     title: '',
     description: '',
     background: '',
@@ -25,8 +25,6 @@ const INITIAL_STATE = {
 export default (state = INITIAL_STATE, action) => {
   console.log(state);
   switch (action.type) {
-    case DROP_SET_REF:
-      return { ...state, fbref: action.payload };
     case DROP_UPDATE:
       // action.payload === { prop: 'name', value: 'jane' }
       return { ...state, [action.payload.prop]: action.payload.value };

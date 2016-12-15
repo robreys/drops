@@ -4,7 +4,6 @@ import sample_drops from './sample_drops';
 import {
   FETCH_NEARBY_SUCCESS,
   FETCH_LIBRARY_SUCCESS,
-  DROP_SET_REF,
   DROP_UPDATE,
   DROP_EDIT_CONTENT,
   DROP_ADD_CONTENT,
@@ -41,9 +40,23 @@ export const dropCreate = () => {
   const { currentUser } = firebase.auth();
   const fbref = firebase.database().ref(`/users/${currentUser.uid}/drops`).push();
 
-  return {
-    type: DROP_SET_REF,
-    payload: fbref
+  return (dispatch) => {
+    navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          dispatch({
+            type: DROP_UPDATE,
+            payload: { prop: 'location', value: { latitude, longitude } }
+          });
+        },
+        (error) => console.log(error),
+        { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
+      );
+
+    dispatch({
+      type: DROP_UPDATE,
+      payload: { prop: 'fbref', value: fbref }
+    });
   };
 };
 
@@ -52,15 +65,15 @@ export const dropEdit = ({ uid }) => {
   const fbref = firebase.database().ref(`/users/${currentUser.uid}/drops/${uid}`);
 
   return {
-    type: DROP_SET_REF,
-    payload: fbref
+    type: DROP_UPDATE,
+    Payload: { prop: 'fbref', value: fbref }
   };
 };
 
-export const dropSave = ({ fbref, title, description, background, content }) => {
+export const dropSave = ({ fbref, location, title, description, background, content }) => {
   return (dispatch) => {
     fbref
-      .set({ title, description, background, content })
+      .set({ location, title, description, background, content })
       .then(() => {
         dispatch({ type: DROP_SAVE_SUCCESS });
         Actions.libraryDropList({ type: 'reset' });
