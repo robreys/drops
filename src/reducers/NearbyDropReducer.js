@@ -1,13 +1,21 @@
 import {
-  FETCH_NEARBY_SUCCESS
+  NEARBY_ADD,
+  NEARBY_REMOVE,
 } from '../actions/types';
 
-const INITIAL_STATE = [];
+const INITIAL_STATE = {};
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
-    case FETCH_NEARBY_SUCCESS:
-      return action.payload;
+    case NEARBY_ADD: {
+      const { key, drop } = action.payload;
+      return { ...state, [key]: drop };
+    }
+    case NEARBY_REMOVE: {
+      const newState = { ...state };
+      delete newState[action.payload];
+      return newState;
+    }
     default:
       return state;
   }

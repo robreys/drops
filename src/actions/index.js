@@ -1,2 +1,2 @@
 export * from './DropActions';
-export * from './AuthActions';
+export * from './GeoQueryActions';

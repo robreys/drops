@@ -8,6 +8,7 @@ import ContentList from './ContentList';
 
 class DropForm extends Component {
   componentWillMount() {
+    console.log(this.props);
     //this.props = { ...this.props, ...this.props.drop };
     _.each(this.props.drop, (value, prop) => {
       this.props.dropUpdate({ prop, value });
@@ -25,18 +26,18 @@ class DropForm extends Component {
     return (
       <ScrollView>
         <Divider styleName="section-header">
-          <Text styleName="md-gutter-left sm-gutter-bottom bold">Background URL</Text>
-        </Divider>
-        <TextInput 
-          value={background}
-          onChangeText={value => this.props.dropUpdate({ prop: 'background', value })}
-        />
-        <Divider styleName="section-header">
           <Text styleName="md-gutter-left sm-gutter-bottom bold">Title</Text>
         </Divider>
         <TextInput 
           value={title}
           onChangeText={value => this.props.dropUpdate({ prop: 'title', value })}
+        />
+        <Divider styleName="section-header">
+          <Text styleName="md-gutter-left sm-gutter-bottom bold">Background URL</Text>
+        </Divider>
+        <TextInput 
+          value={background}
+          onChangeText={value => this.props.dropUpdate({ prop: 'background', value })}
         />
         <Divider styleName="section-header">
           <Text styleName="md-gutter-left sm-gutter-bottom bold">Description</Text>

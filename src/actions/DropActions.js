@@ -1,26 +1,23 @@
 import firebase from 'firebase';
+import moment from 'moment';
 import { Actions } from 'react-native-router-flux';
-import sample_drops from './sample_drops';
 import {
-  FETCH_NEARBY_SUCCESS,
   FETCH_LIBRARY_SUCCESS,
+
+  DROP_RESET,
   DROP_UPDATE,
   DROP_EDIT_CONTENT,
   DROP_ADD_CONTENT,
   DROP_DELETE_CONTENT,
   DROP_SAVE_SUCCESS,
+
   CONTENT_FORM_ADD,
   CONTENT_FORM_EDIT,
   CONTENT_FORM_CLOSE,
   CONTENT_UPDATE
 } from './types';
 
-export const fetchNearby = () => {
-  return {
-    type: FETCH_NEARBY_SUCCESS,
-    payload: sample_drops
-  };
-};
+const GeoFire = require('geofire');
 
 export const fetchLibrary = () => {
   const { currentUser } = firebase.auth();
@@ -41,6 +38,11 @@ export const dropCreate = () => {
   const fbref = firebase.database().ref(`/users/${currentUser.uid}/drops`).push();
 
   return (dispatch) => {
+    dispatch({
+      type: DROP_RESET,
+      payload: null
+    });
+
     navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
@@ -66,18 +68,49 @@ export const dropEdit = ({ uid }) => {
 
   return {
     type: DROP_UPDATE,
-    Payload: { prop: 'fbref', value: fbref }
+    payload: { prop: 'fbref', value: fbref }
+  };
+};
+
+export const dropDelete = ({ uid }) => {
+  const { currentUser } = firebase.auth();
+
+  return () => {
+    firebase.database().ref(`/users/${currentUser.uid}/drops/${uid}`)
+      .remove()
+      .then(() => {
+        Actions.libraryDropList({ type: 'reset' });
+      });
   };
 };
 
 export const dropSave = ({ fbref, location, title, description, background, content }) => {
   return (dispatch) => {
+    // update firebase
+    const { currentUser } = firebase.auth();
+    const owner = currentUser.displayName;
+    const lastUpdated = moment().format();
+
     fbref
-      .set({ location, title, description, background, content })
+      .set({ title, description, background, content, owner, lastUpdated })
       .then(() => {
         dispatch({ type: DROP_SAVE_SUCCESS });
         Actions.libraryDropList({ type: 'reset' });
       });
+
+    // update geofire
+    const locationsRef = firebase.database().ref('/locations');
+    const geoFire = new GeoFire(locationsRef);
+    const key = encodeURIComponent(/.+firebaseio\.com(.+)/g.exec(fbref.toString())[1]);
+    console.log(key);
+    geoFire.get(key).then(
+        (value) => {
+          if (value == null) {
+            geoFire.set(key, [location.latitude, location.longitude]);
+          }
+        },
+        (error) => console.log(error)
+      );
   };
 };
 

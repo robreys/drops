@@ -82,7 +82,7 @@ class AppRouter extends Component {
             </Scene>
 
             {/* manage tab */}
-            <Scene key='manage' title='MANAGE' icon={tabIcon} initial>
+            <Scene key='manage' title='MANAGE' icon={tabIcon}>
               <Scene key='libraryDropList' title='Library' rightTitle="NEW" onRight={() => Actions.dropCreate()} component={LibraryDropList} style={sceneWithTabBarStyle} />
               <Scene key='dropEdit' title='Edit' rightTitle="SAVE" onRight={this.onDropSave.bind(this)} component={DropEdit} style={sceneStyle} hideTabBar />
               <Scene key='dropCreate' title='Create' rightTitle="SAVE" onRight={this.onDropSave.bind(this)} component={DropCreate} style={sceneStyle} hideTabBar />

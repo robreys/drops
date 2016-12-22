@@ -1,13 +1,14 @@
+import _ from 'lodash';
 import React, { Component } from 'react';
 import { Actions } from 'react-native-router-flux';
 import { connect } from 'react-redux';
-import { View } from '@shoutem/ui';
-import { fetchNearby } from '../actions';
+import { View, ScrollView } from '@shoutem/ui';
+import { initGeoQuery } from '../actions';
 import DropList from './shared/DropList';
 
 class NearbyDropList extends Component {
   componentWillMount() {
-    this.props.fetchNearby();
+    this.props.initGeoQuery(this.props);
     this.createDropList(this.props);
   }
 
@@ -18,24 +19,31 @@ class NearbyDropList extends Component {
   }
 
   createDropList({ nearbyDrops }) {
-    console.log(nearbyDrops);
     this.dropList = nearbyDrops;
   }
 
   render() {
     return (
       <View styleName="flexible">
+        <ScrollView>
           <DropList
             drops={this.dropList}
             onPressRow={(drop) => Actions.dropDetail({ drop })}
           />
+        </ScrollView>
       </View>
     );
   }
 }
 
 const mapStateToProps = state => {
-  return { nearbyDrops: state.nearbyDrops };
+  const geoQuery = state.geoQuery;
+
+  const nearbyDrops = _.map(state.nearbyDrops, (value, key) => {
+    return { ...value, key };
+  });
+
+  return { geoQuery, nearbyDrops };
 };
 
-export default connect(mapStateToProps, { fetchNearby })(NearbyDropList);
+export default connect(mapStateToProps, { initGeoQuery })(NearbyDropList);

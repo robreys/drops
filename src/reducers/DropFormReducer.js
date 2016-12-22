@@ -1,4 +1,5 @@
 import {
+  DROP_RESET,
   DROP_UPDATE,
   DROP_EDIT_CONTENT,
   DROP_ADD_CONTENT,
@@ -23,8 +24,9 @@ const INITIAL_STATE = {
 };
 
 export default (state = INITIAL_STATE, action) => {
-  console.log(state);
   switch (action.type) {
+    case DROP_RESET:
+      return { ...INITIAL_STATE };
     case DROP_UPDATE:
       // action.payload === { prop: 'name', value: 'jane' }
       return { ...state, [action.payload.prop]: action.payload.value };

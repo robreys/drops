@@ -1,12 +1,14 @@
 import { combineReducers } from 'redux';
-import AuthReducer from './AuthReducer';
+import { reducer as formReducer } from 'redux-form';
 import NearbyDropReducer from './NearbyDropReducer';
 import LibraryDropReducer from './LibraryDropReducer';
 import DropFormReducer from './DropFormReducer';
+import GeoQueryReducer from './GeoQueryReducer';
 
 export default combineReducers({
-  auth: AuthReducer,
   nearbyDrops: NearbyDropReducer,
   libraryDrops: LibraryDropReducer,
-  dropForm: DropFormReducer
+  dropForm: DropFormReducer,
+  geoQuery: GeoQueryReducer,
+  form: formReducer
 });

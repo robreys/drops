@@ -5,8 +5,8 @@ const renderRow = ({ drop, onPressRow }) => {
   const {
     background,
     title,
-    owner_username,
-    distance_to
+    owner,
+    distance
   } = drop;
 
   return (
@@ -21,8 +21,8 @@ const renderRow = ({ drop, onPressRow }) => {
         />
         <View styleName="vertical stretch space-between">
           <Subtitle>{title}</Subtitle>
-          <Caption>by: {owner_username}</Caption>
-          <Caption>{distance_to} miles away</Caption>
+          <Caption>by: {owner}</Caption>
+          <Caption>{distance} km away</Caption>
         </View>
         <Icon styleName="disclosure" name="right-arrow" />
       </Row>

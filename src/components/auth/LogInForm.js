@@ -1,33 +1,27 @@
 import React, { Component } from 'react';
+import { View, Button, Text, Spinner, Caption } from '@shoutem/ui';
 import { Actions } from 'react-native-router-flux';
-import { connect } from 'react-redux';
-import { View, TextInput, Button, Text, Spinner } from '@shoutem/ui';
-import { authFieldChange, loginUser } from '../../actions';
+import { Field, reduxForm } from 'redux-form';
+import { Keyboard } from 'react-native';
+import { TextField } from '../common';
+import { loginUser } from '../../utils';
 
 class LoginForm extends Component {
-  onEmailChange(value) {
-    this.props.authFieldChange({ prop: 'email', value });
+  onSubmit(values) {
+    Keyboard.dismiss();
+    return loginUser(values);
   }
 
-  onPasswordChange(value) {
-    this.props.authFieldChange({ prop: 'password', value });
-  }
-
-  onLogin() {
-    console.log(this.props);
-    const { email, password } = this.props;
-    this.props.loginUser({ email, password });
-  }
-
-  renderLoginButton() {
-    if (this.props.loading) {
-      return <Spinner size='large' />;
+  renderSubmitButton() {
+    const { submitting, handleSubmit } = this.props;
+    if (submitting) {
+      return (<Spinner size="large" />);
     }
 
     return (
       <Button
         styleName="confirmation dark"
-        onPress={this.onLogin.bind(this)}
+        onPress={handleSubmit(this.onSubmit.bind(this))}
       >
         <Text>LOG IN</Text>
       </Button>
@@ -35,65 +29,66 @@ class LoginForm extends Component {
   }
 
   render() {
-    const { signUpStyle, errorStyle } = styles;
+    const { error } = this.props;
+    const { signUpButtonStyle, errorMessageStyle } = styles;
 
     return (
       <View styleName="flexible vertical v-center">
-          <TextInput 
-            placeholder={'email'}
-            value={this.props.email}
-            onChangeText={this.onEmailChange.bind(this)}
-          />
-          <TextInput 
-            placeholder={'password'}
-            secureTextEntry
-            value={this.props.password}
-            onChangeText={this.onPasswordChange.bind(this)}
-          />
-          <View styleName="horizontal h-center">
-            {this.renderLoginButton()}
-          </View>
-          <View styleName="horizontal h-center">
-            <Button
-              styleName="tight clear"
-              onPress={() => console.log('yo')}
-            >
-              <Text styleName="bold">Forgot your password?</Text>
-            </Button>
-          </View>
-          <View styleName="horizontal h-center">
-            <Text styleName="bold" style={errorStyle}>{this.props.error}</Text>
-          </View>
-          <View styleName="horizontal h-center" style={signUpStyle}>
-            <Button
-              styleName="tight clear"
-              onPress={() => Actions.signUp()}
-            >
-              <Text styleName="bold">Sign up for Drops.</Text>
-            </Button>
-          </View>
+        <Field
+          name='email'
+          component={TextField}
+          placeholder='email'
+          keyboardType='email-address'
+        />
+        <Field
+          secureTextEntry
+          name='password'
+          component={TextField}
+          placeholder='password'
+        />
+
+        <View styleName="horizontal h-center">
+          {this.renderSubmitButton()}
+        </View>
+
+        <View styleName="horizontal h-center">
+          <Button
+            styleName="tight clear"
+            onPress={() => console.log('yo')}
+          >
+            <Text styleName="bold">Forgot your password?</Text>
+          </Button>
+        </View>
+
+        <View styleName="horizontal h-center md-gutter">
+          <Caption styleName="bold" style={errorMessageStyle}>{error}</Caption>
+        </View>
+
+        <View styleName="horizontal h-center" style={signUpButtonStyle}>
+          <Button
+            styleName="tight clear"
+            onPress={Actions.signUp}
+          >
+            <Text styleName="bold">Sign up for Drops</Text>
+          </Button>
+        </View>
       </View>
     );
   }
 }
-
 const styles = {
-  signUpStyle: {
+  signUpButtonStyle: {
     position: 'absolute',
     left: 0,
     right: 0,
     bottom: 0
   },
-  errorStyle: {
-    color: '#F44336'
+  errorMessageStyle: {
+    color: '#E53935'
   }
 };
 
-const mapStateToProps = state => {
-  const { email, password, loading, error } = state.auth;
-
-  return { email, password, loading, error };
-};
-
-export default connect(mapStateToProps, { authFieldChange, loginUser })(LoginForm);
-
+// Decorate the form component
+export default reduxForm({
+  form: 'login', // a unique name for this form
+})(LoginForm);
