@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Scene, Router, Actions } from 'react-native-router-flux';
 import { connect } from 'react-redux';
 import { Subtitle, View } from '@shoutem/ui';
+import { submit } from 'redux-form';
 import LogInForm from './components/auth/LogInForm';
 import SignUpForm from './components/auth/SignUpForm';
 import NearbyDropList from './components/NearbyDropList';
@@ -10,7 +11,7 @@ import DropDetail from './components/DropDetail';
 import DropContent from './components/DropContent';
 import DropEdit from './components/DropEdit';
 import DropCreate from './components/DropCreate';
-import { dropSave } from './actions';
+import NavBar from './components/common/NavBar';
 
 const tabIcon = ({ selected, title }) => {
   const { tabStyle, selectedTabStyle } = styles;
@@ -46,10 +47,12 @@ const getTitle = (state) => {
 };
 
 class AppRouter extends Component {
-  onDropSave() {
-    const { fbref, location, title, description, background, content } = this.props;
-    
-    this.props.dropSave({ fbref, location, title, description, background, content });
+  onCreateDrop(state) {
+    state.dispatch(submit('dropCreate'));
+  }
+
+  onSaveDrop(state) {
+    state.dispatch(submit('dropEdit'));
   }
 
   render() {
@@ -61,7 +64,7 @@ class AppRouter extends Component {
     } = styles;
 
     return (
-      <Router navigationBarStyle={navBarStyle} titleStyle={titleStyle} getTitle={getTitle}>
+      <Router navigationBarStyle={navBarStyle} titleStyle={titleStyle} getTitle={getTitle} navBar={NavBar}>
         <Scene key='auth'>
           <Scene key='login' title='Log In' component={LogInForm} />
           <Scene key='signUp' title='Sign Up' component={SignUpForm} />
@@ -84,8 +87,8 @@ class AppRouter extends Component {
             {/* manage tab */}
             <Scene key='manage' title='MANAGE' icon={tabIcon}>
               <Scene key='libraryDropList' title='Library' rightTitle="NEW" onRight={() => Actions.dropCreate()} component={LibraryDropList} style={sceneWithTabBarStyle} />
-              <Scene key='dropEdit' title='Edit' rightTitle="SAVE" onRight={this.onDropSave.bind(this)} component={DropEdit} style={sceneStyle} hideTabBar />
-              <Scene key='dropCreate' title='Create' rightTitle="SAVE" onRight={this.onDropSave.bind(this)} component={DropCreate} style={sceneStyle} hideTabBar />
+              <Scene key='dropEdit' title='Edit' rightTitle="SAVE" onRight={this.onSaveDrop} component={DropEdit} style={sceneStyle} hideTabBar />
+              <Scene key='dropCreate' title='Create' rightTitle="SAVE" onRight={this.onCreateDrop} component={DropCreate} style={sceneStyle} hideTabBar />
             </Scene>
           </Scene>
         </Scene>
@@ -94,13 +97,7 @@ class AppRouter extends Component {
   }
 }
 
-const mapStateToProps = state => {
- const { fbref, location, title, description, background, content } = state.dropForm;
-
- return { fbref, location, title, description, background, content };
-};
-
-export default connect(mapStateToProps, { dropSave })(AppRouter);
+export default connect()(AppRouter);
 
 const styles = {
   navBarStyle: {

@@ -6,23 +6,17 @@ import { Image, Overlay, Text, Title, Caption, Row, Button, Divider, View } from
 import { isInUnlockRange } from '../utils';
 
 export default class extends Component {
-  componentWillMount() {
-    this.props = { ...this.props, ...this.props.drop };
-  }
-
   renderContentButton() {
-    const { distance, title, content } = this.props;
+    const { distance, title, content } = this.props.drop;
 
     if (isInUnlockRange(distance)) {
       return (
-
-          <Button
-            styleName="dark"
-            onPress={() => Actions.dropContent({ content, dropTitle: title })}
-          >
-            <Text>VIEW CONTENT</Text>
-          </Button>
-
+        <Button
+          styleName="dark"
+          onPress={() => Actions.dropContent({ content, dropTitle: title })}
+        >
+          <Text>VIEW CONTENT</Text>
+        </Button>
       );
     }
   }
@@ -34,7 +28,7 @@ export default class extends Component {
       description,
       background,
       lastUpdated
-    } = this.props;
+    } = this.props.drop;
 
     return (
       <View styleName="flexible">

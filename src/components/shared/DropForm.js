@@ -1,76 +1,148 @@
-import _ from 'lodash';
 import React, { Component } from 'react';
 import { ScrollView } from 'react-native';
-import { connect } from 'react-redux';
-import { TextInput, Text, Divider, Screen, Caption } from '@shoutem/ui';
-import { dropUpdate } from '../../actions';
-import ContentList from './ContentList';
+import { View, Button, Row, Text, Divider, Caption, Image } from '@shoutem/ui';
+import { Field, FieldArray } from 'redux-form';
+import { TextField } from '../common';
+import ContentForm from './ContentForm';
 
-class DropForm extends Component {
-  componentWillMount() {
-    console.log(this.props);
-    //this.props = { ...this.props, ...this.props.drop };
-    _.each(this.props.drop, (value, prop) => {
-      this.props.dropUpdate({ prop, value });
-    });
+export default class extends Component {
+  state = {
+    modalForm: {
+      visible: false,
+      item: '',
+      index: -1,
+      editMode: false
+    }
+  };
+
+  editContent({ item, index }) {
+    this.showModal({ item, index, editMode: true });
+  }
+
+  addContent({ fields }) {
+    const index = fields.length;
+    const item = `content[${index}]`;
+
+    fields.push({});
+    this.showModal({ item, index, editMode: false });
+  }
+
+  closeModal() {
+    this.setState({ modalForm: { visible: false } });
+  }
+
+  showModal({ item, index, editMode }) {
+    this.setState({ modalForm: { visible: true, item, index, editMode } });
+  }
+
+  renderMessage({ input: { value } }) {
+    if (value) {
+      return (
+        <Row>
+          <Text styleName="caption">{value}</Text>
+        </Row>
+      );
+    }
+
+    return null;
+  }
+
+  renderImage({ input: { value } }) {
+    if (value) {
+      return (
+        <View
+          style={{ marginBottom: 0 }}
+          styleName="flexible vertical v-center h-center"
+        >
+          <Image
+            styleName="large-banner"
+            source={{ uri: value }}
+          />
+        </View>
+      ); 
+    } 
+
+    return null;
+  }
+
+  renderContentList({ fields }) {
+    return (
+      <View>
+        {fields.map((item, index) => (
+          <View
+            key={index}
+            styleName="sm-gutter-top"
+          >
+            <Button
+              styleName="tight clear"
+              onPress={this.editContent.bind(this, { item, index })}
+            > 
+              <Row>
+                <View styleName="vertical">
+                  <Field name={`${item}.image`} component={this.renderImage} />
+                  <Field name={`${item}.message`} component={this.renderMessage} />
+                </View>
+              </Row>
+            </Button>
+          </View>
+        ))}
+
+        <View styleName="horizontal">
+          <Button
+            styleName="full-width dark"
+            onPress={this.addContent.bind(this, { fields })}
+          >
+            <Text>ADD CONTENT</Text>
+          </Button>
+        </View>
+
+        <ContentForm
+          onComplete={this.closeModal.bind(this)}
+          fields={fields}
+          {...this.state.modalForm}
+        />
+      </View>
+    );
   }
 
   render() {
-    const {
-      title,
-      description,
-      background,
-      content
-    } = this.props;
-
     return (
       <ScrollView>
+        {/* General Text Fields */}
         <Divider styleName="section-header">
           <Text styleName="md-gutter-left sm-gutter-bottom bold">Title</Text>
         </Divider>
-        <TextInput 
-          value={title}
-          onChangeText={value => this.props.dropUpdate({ prop: 'title', value })}
+        <Field
+          name='title'
+          component={TextField}
+          placeholder='title'
         />
         <Divider styleName="section-header">
           <Text styleName="md-gutter-left sm-gutter-bottom bold">Background URL</Text>
         </Divider>
-        <TextInput 
-          value={background}
-          onChangeText={value => this.props.dropUpdate({ prop: 'background', value })}
+        <Field
+          name='background'
+          component={TextField}
+          placeholder='background url'
         />
         <Divider styleName="section-header">
           <Text styleName="md-gutter-left sm-gutter-bottom bold">Description</Text>
         </Divider>
-        <TextInput 
+        <Field
           multiline
           numberOfLines={4}
-          value={description}
-          onChangeText={value => this.props.dropUpdate({ prop: 'description', value })}
+          name='description'
+          component={TextField}
+          placeholder='description'
         />
         <Divider styleName="section-header">
           <Text styleName="md-gutter-left sm-gutter-bottom bold">Content</Text>
           <Caption>Click item to edit</Caption>
         </Divider>
-        <Screen style={{ backgroundColor: '#E0E0E0' }}>
-          <ContentList
-            content={content} 
-            editable
-          />
-        </Screen>
+
+        {/* Content List */}
+        <FieldArray name="content" component={this.renderContentList.bind(this)} />
       </ScrollView>
     );
   }
 }
-
-const mapStateToProps = state => {
-  const { title, description, background } = state.dropForm;
-
-  const content = _.map(state.dropForm.content, (value, uid) => {
-    return { ...value, uid };
-  });
-  
-  return { title, description, background, content };
-};
-
-export default connect(mapStateToProps, { dropUpdate })(DropForm);

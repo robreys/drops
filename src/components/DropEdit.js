@@ -2,22 +2,51 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Alert } from 'react-native';
 import { View, Button, Text } from '@shoutem/ui';
+import { reduxForm, initialize } from 'redux-form';
 import DropForm from './shared/DropForm';
-import { dropEdit, dropDelete } from '../actions';
+import { createDropRef, saveDrop, deleteDrop } from '../utils';
+
+const FORM_NAME = 'dropEdit';
+
+const submit = (values) => {
+    console.log('values', values);
+    saveDrop(values);
+};
 
 class DropEdit extends Component {
   componentWillMount() {
-    this.props.dropEdit({ uid: this.props.drop.uid });
+    const { dispatch } = this.props;
+    const {
+      uid,
+      location,
+      title,
+      background,
+      description,
+      content
+    } = this.props.drop;
+
+    console.log('uid', uid);
+
+    dispatch(initialize(FORM_NAME, {
+      fbref: createDropRef(uid),
+      location,
+      title,
+      background,
+      description,
+      content
+    }));
   }
 
   onDelete() {
+    const { title, uid } = this.props.drop;
+
     Alert.alert(
-      `Deleting ${this.props.drop.title}`,
+      `Deleting ${title}`,
       'Are you sure you want to delete this drop?',
       [
         {
           text: 'DELETE',
-          onPress: () => this.props.dropDelete({ uid: this.props.drop.uid })
+          onPress: () => deleteDrop({ uid })
         }, {
           text: 'CANCEL',
           onPress: () => console.log('Cancel Pressed'),
@@ -32,7 +61,7 @@ class DropEdit extends Component {
 
     return (
       <View styleName="flexible">
-        <DropForm drop={this.props.drop} />
+        <DropForm />
         <Button
           style={deleteButtonStyle}
           onPress={this.onDelete.bind(this)}
@@ -53,4 +82,10 @@ const styles = {
   }
 };
 
-export default connect(null, { dropEdit, dropDelete })(DropEdit);
+// Decorate the form component
+const FormComponent = reduxForm({
+  form: FORM_NAME, // a unique name for this form
+  onSubmit: submit
+})(DropEdit);
+
+export default connect()(FormComponent);

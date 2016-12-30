@@ -1,38 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { View, Row, Title, Text, Image, Button, ListView, Lightbox } from '@shoutem/ui';
-import { addContent, editContent } from '../../actions';
-import ContentForm from './ContentForm';
+import { View, Row, Title, Text, Image, ListView, Lightbox } from '@shoutem/ui';
 
 class ContentList extends Component {
-  // state = { 
-  //   formEdit: true,
-  //   formVisible: false,
-  //   formContent: {}
-  // };
-
-  // showEditForm(item) {
-  //   this.setState({ 
-  //     formEdit: true,
-  //     formContent: item,
-  //     formVisible: true
-  //   });
-  // }
-
-  // showAddForm() {
-  //   this.setState({
-  //     formEdit: false,
-  //     formContent: {},
-  //     formVisible: true
-  //   });
-  // }
-
-  // closeForm() {
-  //   this.setState({
-  //     formVisible: false
-  //   });
-  // }
-
   renderMessage({ message }) {
     if (message) {
       return (
@@ -44,26 +14,16 @@ class ContentList extends Component {
   }
 
   renderImage({ image }) {
-    const { editable } = this.props;
-
     if (image) {
-      const imageComponent = (
-        <View style={{ marginBottom: 0 }}>
-        <Image
-          styleName="large-banner"
-          source={{ uri: image }}
-        />
-        </View>
-      );
-
-      if (editable) {
-        return imageComponent;
-      }
-
       return (
         <Lightbox>
           <View styleName="flexible vertical v-center h-center">
-            {imageComponent}
+            <View style={{ marginBottom: 0 }}>
+              <Image
+                styleName="large-banner"
+                source={{ uri: image }}
+              />
+            </View>
           </View>
         </Lightbox>
       );
@@ -71,60 +31,17 @@ class ContentList extends Component {
   }
 
 
-  renderForm() {
-    const { editable } = this.props;
-
-    if (editable) {
-      return (
-        <ContentForm />
-      );
-    }
-  }
-
-  renderAdd() {
-    const { editable } = this.props;
-
-    if (editable) {
-      return (
-        <View styleName="horizontal">
-            <Button
-              styleName="full-width dark"
-              onPress={() => this.props.addContent()}
-            >
-              <Text>ADD CONTENT</Text>
-            </Button>
-        </View>
-      );
-    }
-  }
-
   renderRow(item) {
-    const { editable } = this.props;
     const { rowStyle } = styles;
-
-    let content = (
-      <Row style={rowStyle}>
-        <View styleName="vertical">
-          {this.renderImage(item)}
-          {this.renderMessage(item)}
-        </View>
-      </Row>
-    );
-
-    if (editable) {
-      content = ( 
-        <Button
-          styleName="tight clear"
-          onPress={() => this.props.editContent({ item })}
-        > 
-          {content}
-        </Button>
-      );
-    }
 
     return (
       <View styleName="sm-gutter-top">
-        {content}
+        <Row style={rowStyle}>
+          <View styleName="vertical">
+            {this.renderImage(item)}
+            {this.renderMessage(item)}
+          </View>
+        </Row>
       </View>
     );
   }
@@ -136,11 +53,9 @@ class ContentList extends Component {
       return (
         <View styleName="sm-gutter-left sm-gutter-right sm-gutter-bottom rounded-corners">
           <ListView
-            renderRow={(item) => this.renderRow.bind(this)(item)}
+            renderRow={this.renderRow.bind(this)}
             data={content}
           />
-          {this.renderAdd()}
-          {this.renderForm()}
         </View>
       );
     }
@@ -148,8 +63,6 @@ class ContentList extends Component {
     return (
       <View styleName="sm-gutter flexible vertical v-center h-center">
         <Title styleName="lg-gutter">no content</Title>
-        {this.renderAdd()}
-        {this.renderForm()}
       </View>
     );
   }
@@ -161,4 +74,4 @@ const styles = {
   }
 };
 
-export default connect(null, { addContent, editContent })(ContentList);
+export default connect()(ContentList);

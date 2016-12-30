@@ -1,93 +1,60 @@
 import React, { Component } from 'react';
 import { Modal } from 'react-native';
-import { connect } from 'react-redux';
-import { View, Divider, Text, Title, TextInput, Button } from '@shoutem/ui';
-import { closeContentForm, contentUpdate, dropAddContent, dropEditContent, dropDeleteContent } from '../../actions';
+import { View, Divider, Text, Title, Button } from '@shoutem/ui';
+import { Field } from 'redux-form';
+import { TextField } from '../common';
 
-class ContentForm extends Component {
-  onMessageChange(value) {
-    this.props.contentUpdate({ prop: 'message', value });
-  }
-
-  onImageChange(value) {
-    this.props.contentUpdate({ prop: 'image', value });
-  }
-
-  onDeleteContent() {
-    const { formContent } = this.props;
-    const { uid } = formContent;
-
-    this.props.dropDeleteContent({ uid });
-  }
-
-  onAddContent() {
-    const { formContent } = this.props;
-
-    this.props.dropAddContent({ value: formContent });
-  }
-
-  onEditContent() {
-    const { formContent } = this.props;
-    const { uid, message, image } = formContent;
-
-    this.props.dropEditContent({ uid, value: { message, image } });
-  }
-
+export default class extends Component {
   renderTitle() {
-    if (this.props.formEdit) {
-      return (
-        <View styleName="horizontal v-center">
-          <View styleName="flexible" >
-            <Title styleName="md-gutter-left">Edit Content</Title>
-          </View>
-          <View>
-            <Button 
-              styleName="tight md-gutter-right"
-              onPress={this.onDeleteContent.bind(this)}
-            >
-              <Text style={{ color: 'red' }}>DELETE</Text>
-            </Button>
-          </View>
-        </View>);
-    }
+    const { fields, index, editMode, onComplete } = this.props;
+    const title = (editMode) ? 'Edit Content' : 'Add Content';
+    const action = (editMode) ? 'DELETE' : 'CANCEL';
 
-    return (<Title styleName="md-gutter-left">Add Content</Title>);
+    return (
+      <View styleName="horizontal v-center">
+        <View styleName="flexible" >
+          <Title styleName="md-gutter-left">{title}</Title>
+        </View>
+        <View>
+          <Button 
+            styleName="tight md-gutter-right"
+            onPress={() => {
+              fields.remove(index);
+              onComplete();
+            }}
+          >
+            <Text style={{ color: 'red' }}>{action}</Text>
+          </Button>
+        </View>
+      </View>
+    );
   }
 
-  renderActions() {
-    const { formEdit } = this.props;
-
-    const completeText = (formEdit) ? 'DONE' : 'ADD';
+  renderComplete() {
+    const { editMode, onComplete } = this.props;
+    const text = (editMode) ? 'DONE' : 'ADD';
 
     return (
       <View styleName="horizontal flexible lg-gutter-top md-gutter-bottom">
         <Button
           styleName="confirmation dark"
-          onPress={formEdit ? this.onEditContent.bind(this) : this.onAddContent.bind(this)}
+          onPress={onComplete}
         >
-          <Text>{completeText}</Text>
-        </Button>
-
-        <Button
-          styleName="confirmation dark"
-          onPress={this.props.closeContentForm}
-        >
-          <Text>CANCEL</Text>
+          <Text>{text}</Text>
         </Button>
       </View>
     );
   }
 
   render() {
-    const { formVisible, formContent } = this.props;
-    const { message, image } = formContent;
+    const { visible, item } = this.props;
 
     return (
       <Modal
         animationType='fade'
         onRequestClose={() => {}}
         transparent
-        visible={formVisible}
+        visible={visible}
       >
         <View
           styleName="flexible vertical v-center"
@@ -101,21 +68,23 @@ class ContentForm extends Component {
             <Divider styleName="section-header">
               <Text styleName="md-gutter-left sm-gutter-bottom bold">Message</Text>
             </Divider>
-            <TextInput 
-              value={message}
-              onChangeText={this.onMessageChange.bind(this)}
+            <Field
+              name={`${item}.message`}
+              component={TextField}
+              placeholder='A secret message? ;)'
             />
 
             <Divider styleName="section-header">
             <Text styleName="md-gutter-left sm-gutter-bottom bold">Image URL</Text>
             </Divider>
-            <TextInput 
-              value={image}
-              onChangeText={this.onImageChange.bind(this)}
+            <Field
+              name={`${item}.image`}
+              component={TextField}
+              placeholder='image url {.jpg | .png }'
             />
 
             <View styleName="horizontal sm-gutter-bottom">
-              {this.renderActions()}
+              {this.renderComplete()}
             </View>
           </View>
         </View>
@@ -123,17 +92,3 @@ class ContentForm extends Component {
     );
   }
 }
-
-const mapStateToProps = state => {
-  const { formEdit, formVisible, formContent } = state.dropForm;
-
-  return { formEdit, formVisible, formContent };
-};
-
-export default connect(mapStateToProps, { 
-  closeContentForm,
-  contentUpdate,
-  dropAddContent,
-  dropEditContent,
-  dropDeleteContent
-})(ContentForm);

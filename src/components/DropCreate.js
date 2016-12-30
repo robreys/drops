@@ -1,21 +1,43 @@
 import React, { Component } from 'react';
-import { View } from '@shoutem/ui';
 import { connect } from 'react-redux';
-import { dropCreate } from '../actions';
+import { View } from '@shoutem/ui';
+import { reduxForm, change } from 'redux-form';
 import DropForm from './shared/DropForm';
+import { createDropRef, saveDrop } from '../utils';
 
-class DropCreate extends Component {
+const FORM_NAME = 'dropCreate';
+
+const submit = (values) => {
+  console.log('values', values);
+  saveDrop(values);
+};
+
+class DropCreate extends Component { 
   componentWillMount() {
-    this.props.dropCreate();
-  }
+    const { dispatch, location } = this.props;
+    
+    dispatch(change(FORM_NAME, 'fbref', createDropRef()));
+    dispatch(change(FORM_NAME, 'location', location));
+  } 
 
   render() {
     return (
       <View styleName="flexible">
-        <DropForm drop={{}} />
+        <DropForm />
       </View>
     );
   }
 }
 
-export default connect(null, { dropCreate })(DropCreate);
+// Decorate the form component
+const FormComponent = reduxForm({
+  form: FORM_NAME, // a unique name for this form
+  onSubmit: submit
+})(DropCreate);
+
+const mapStateToProps = state => {
+  const { position } = state.location;
+  return { location: position };
+};
+
+export default connect(mapStateToProps)(FormComponent);

@@ -3,12 +3,12 @@ import React, { Component } from 'react';
 import { Actions } from 'react-native-router-flux';
 import { connect } from 'react-redux';
 import { View, ScrollView } from '@shoutem/ui';
-import { initGeoQuery } from '../actions';
+import { initializeLocation, clearLocationReducer } from '../actions';
 import DropList from './shared/DropList';
 
 class NearbyDropList extends Component {
   componentWillMount() {
-    this.props.initGeoQuery(this.props);
+    this.props.initializeLocation();
     this.createDropList(this.props);
   }
 
@@ -16,6 +16,10 @@ class NearbyDropList extends Component {
     //nextProps: next set of props component will be rendered with
     //this.props: old set of props
     this.createDropList(nextProps);
+  }
+
+  componentWillUnmount() {
+    this.props.clearLocationReducer();
   }
 
   createDropList({ nearbyDrops }) {
@@ -37,13 +41,11 @@ class NearbyDropList extends Component {
 }
 
 const mapStateToProps = state => {
-  const geoQuery = state.geoQuery;
-
-  const nearbyDrops = _.map(state.nearbyDrops, (value, key) => {
-    return { ...value, key };
+  const nearbyDrops = _.map(state.nearbyDrops, (value, uid) => {
+    return { ...value, uid };
   });
 
-  return { geoQuery, nearbyDrops };
+  return { nearbyDrops };
 };
 
-export default connect(mapStateToProps, { initGeoQuery })(NearbyDropList);
+export default connect(mapStateToProps, { initializeLocation, clearLocationReducer })(NearbyDropList);
