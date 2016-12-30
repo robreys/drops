@@ -28,8 +28,8 @@
       </activity>
       <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
       <meta-data
-       android:name="com.google.android.geo.API_KEY"
-       android:value="AIzaSyDnWjTNx6bPKSuwLOd2XA5UJrEJDLtczog"/>
+        android:name="com.google.android.geo.API_KEY"
+        android:value="AIzaSyBDhEsX6jngD52KdPjvBlObt_tH8BrT9ZY"/>
     </application>
 
 </manifest>

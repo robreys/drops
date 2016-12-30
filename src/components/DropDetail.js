@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import moment from 'moment';
 import { Actions } from 'react-native-router-flux';
-import { ScrollView } from 'react-native';
+import { ScrollView, StyleSheet, View as RNView, Dimensions } from 'react-native';
+import MapView from 'react-native-maps';
 import { Image, Overlay, Text, Title, Caption, Row, Button, Divider, View } from '@shoutem/ui';
 import { isInUnlockRange } from '../utils';
 
@@ -30,6 +31,8 @@ export default class extends Component {
       lastUpdated
     } = this.props.drop;
 
+    const { width } = Dimensions.get('window');
+
     return (
       <View styleName="flexible">
         <ScrollView>
@@ -56,10 +59,17 @@ export default class extends Component {
           <Divider styleName="section-header">
             <Text styleName="md-gutter-left sm-gutter-bottom bold">Location</Text>
           </Divider>
-          <Image
-            styleName="large-wide"
-            source={{ uri: 'https://s-media-cache-ak0.pinimg.com/736x/a8/91/e4/a891e44888a77ed638af6192508feba1.jpg' }} 
-          />
+          <RNView style={[styles.container, { width }]}>
+           <MapView
+             style={styles.map}
+             region={{
+               latitude: 37.78825,
+               longitude: -122.4324,
+               latitudeDelta: 0.015,
+               longitudeDelta: 0.0121,
+             }}
+           />
+          </RNView>
         </ScrollView>
         
         {this.renderContentButton()}
@@ -67,3 +77,14 @@ export default class extends Component {
     );
   }
 }
+
+const styles = StyleSheet.create({
+ container: {
+   height: 400,
+   justifyContent: 'flex-end',
+   alignItems: 'center',
+ },
+ map: {
+   ...StyleSheet.absoluteFillObject,
+ },
+});
