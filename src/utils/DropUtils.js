@@ -14,8 +14,13 @@ export const geoKeyToFbKey = (key) => {
   return decodeURIComponent(key);
 };
 
-export const isInUnlockRange = (distance) => {
-  return !Number.isNaN(distance) && distance <= UNLOCK_RANGE;
+export const isInUnlockRange = (coord1, coord2) => {
+  const distance = GeoFire.distance(
+      [coord1.latitude, coord1.longitude],
+      [coord2.latitude, coord2.longitude]
+    );
+  
+  return distance <= UNLOCK_RANGE;
 };
 
 export const createDropRef = (uid) => {

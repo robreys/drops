@@ -4,6 +4,22 @@ import { View, Button, Row, Text, Divider, Caption, Image } from '@shoutem/ui';
 import { Field, FieldArray } from 'redux-form';
 import { TextField } from '../common';
 import ContentForm from './ContentForm';
+import Colors from '../../resources/Colors';
+
+const styles = {
+  fieldLabel: {
+    backgroundColor: Colors.darkBlue
+  },
+  addContentButton: {
+    backgroundColor: Colors.blue
+  },
+  contentItemContainer: {
+    padding: 0
+  },
+  contentItem: {
+    backgroundColor: Colors.lightBlue
+  }
+};
 
 export default class extends Component {
   state = {
@@ -36,22 +52,16 @@ export default class extends Component {
   }
 
   renderMessage({ input: { value } }) {
-    if (value) {
-      return (
-        <Row>
-          <Text styleName="caption">{value}</Text>
-        </Row>
-      );
-    }
-
-    return null;
+    return (value && (
+        <Text styleName="caption md-gutter-top md-gutter-bottom">
+          {value}
+        </Text>
+      )) || null;
   }
 
   renderImage({ input: { value } }) {
-    if (value) {
-      return (
+    return (value && (
         <View
-          style={{ marginBottom: 0 }}
           styleName="flexible vertical v-center h-center"
         >
           <Image
@@ -59,10 +69,7 @@ export default class extends Component {
             source={{ uri: value }}
           />
         </View>
-      ); 
-    } 
-
-    return null;
+      )) || null; 
   }
 
   renderContentList({ fields }) {
@@ -70,15 +77,20 @@ export default class extends Component {
       <View>
         {fields.map((item, index) => (
           <View
+            styleName="sm-gutter rounded-corners"
             key={index}
-            styleName="sm-gutter-top"
           >
             <Button
               styleName="tight clear"
               onPress={this.editContent.bind(this, { item, index })}
             > 
-              <Row>
-                <View styleName="vertical">
+              <Row 
+                style={styles.contentItemContainer}
+              >
+                <View
+                  styleName="vertical sm-gutter"
+                  style={styles.contentItem}
+                >
                   <Field name={`${item}.image`} component={this.renderImage} />
                   <Field name={`${item}.message`} component={this.renderMessage} />
                 </View>
@@ -87,12 +99,13 @@ export default class extends Component {
           </View>
         ))}
 
-        <View styleName="horizontal">
+        <View styleName="horizontal sm-gutter">
           <Button
-            styleName="full-width dark"
+            style={styles.addContentButton}
+            styleName="full-width"
             onPress={this.addContent.bind(this, { fields })}
           >
-            <Text>ADD CONTENT</Text>
+            <Text styleName="bright">Add Content</Text>
           </Button>
         </View>
 
@@ -109,24 +122,30 @@ export default class extends Component {
     return (
       <ScrollView>
         {/* General Text Fields */}
-        <Divider styleName="section-header">
-          <Text styleName="md-gutter-left sm-gutter-bottom bold">Title</Text>
+        <Divider styleName="section-header" style={styles.fieldLabel}>
+          <Text styleName="md-gutter-left sm-gutter-bottom bold bright">
+            Title
+          </Text>
         </Divider>
         <Field
           name='title'
           component={TextField}
           placeholder='title'
         />
-        <Divider styleName="section-header">
-          <Text styleName="md-gutter-left sm-gutter-bottom bold">Background URL</Text>
+        <Divider styleName="section-header" style={styles.fieldLabel}>
+          <Text styleName="md-gutter-left sm-gutter-bottom bold bright">
+            Background (optional)
+          </Text>
         </Divider>
         <Field
           name='background'
           component={TextField}
-          placeholder='background url'
+          placeholder='background url (.jpg | .png)'
         />
-        <Divider styleName="section-header">
-          <Text styleName="md-gutter-left sm-gutter-bottom bold">Description</Text>
+        <Divider styleName="section-header" style={styles.fieldLabel}>
+          <Text styleName="md-gutter-left sm-gutter-bottom bold bright">
+            Description
+          </Text>
         </Divider>
         <Field
           multiline
@@ -135,9 +154,13 @@ export default class extends Component {
           component={TextField}
           placeholder='description'
         />
-        <Divider styleName="section-header">
-          <Text styleName="md-gutter-left sm-gutter-bottom bold">Content</Text>
-          <Caption>Click item to edit</Caption>
+        <Divider styleName="section-header" style={styles.fieldLabel}>
+          <Text styleName="md-gutter-left sm-gutter-bottom bold bright">
+            Content
+          </Text>
+          <Caption styleName="bright">
+            Click item to edit
+          </Caption>
         </Divider>
 
         {/* Content List */}

@@ -12,6 +12,26 @@ import DropContent from './components/DropContent';
 import DropEdit from './components/DropEdit';
 import DropCreate from './components/DropCreate';
 import NavBar from './components/common/NavBar';
+import TabBar from './components/common/TabBar';
+import Colors from './resources/Colors';
+
+const styles = {
+  navBarStyle: {
+    backgroundColor: Colors.darkBlue
+  },
+  titleStyle: {
+    color: 'white'
+  },
+  tabStyle: {
+    backgroundColor: Colors.gray
+  },
+  selectedTabStyle: {
+    backgroundColor: Colors.darkBlue
+  },
+  sceneStyle: {
+    paddingTop: 50
+  },
+};
 
 const tabIcon = ({ selected, title }) => {
   const { tabStyle, selectedTabStyle } = styles;
@@ -19,14 +39,14 @@ const tabIcon = ({ selected, title }) => {
   if (selected) {
     return (
       <View styleName="flexible stretch vertical h-center v-center" style={selectedTabStyle}>
-        <Subtitle styleName="bright">{title}</Subtitle>
+        <Subtitle styleName="bright bold">{title}</Subtitle>
       </View>
     );
   }
 
   return (
       <View styleName="flexible stretch vertical h-center v-center" style={tabStyle}>
-        <Subtitle styleName="bright">{title}</Subtitle>
+        <Subtitle styleName="bright bold">{title}</Subtitle>
       </View>
   );
 };
@@ -59,8 +79,7 @@ class AppRouter extends Component {
     const { 
       navBarStyle,
       titleStyle,
-      sceneStyle, 
-      sceneWithTabBarStyle
+      sceneStyle,
     } = styles;
 
     return (
@@ -70,25 +89,26 @@ class AppRouter extends Component {
           <Scene key='signUp' title='Sign Up' component={SignUpForm} />
         </Scene>
 
-        <Scene key='home'>
+        <Scene key='home' initial>
           {/* tab container */}
           <Scene
             key='tabbar'
             tabs
+            component={TabBar}
           >
 
-            {/* locate tab */}
-            <Scene key='locate' title='LOCATE' icon={tabIcon}>
-              <Scene key='nearbyDropList' title='Nearby' component={NearbyDropList} style={sceneWithTabBarStyle} />
+            {/* nearby tab */}
+            <Scene key='nearby' title='NEARBY' icon={tabIcon}>
+              <Scene key='nearbyDropList' title='Nearby' component={NearbyDropList} style={sceneStyle} />
               <Scene key='dropDetail' title='Detail' component={DropDetail} style={sceneStyle} hideTabBar />
               <Scene key='dropContent' title='Content' component={DropContent} style={sceneStyle} />
             </Scene>
 
-            {/* manage tab */}
-            <Scene key='manage' title='MANAGE' icon={tabIcon}>
-              <Scene key='libraryDropList' title='Library' rightTitle="NEW" onRight={() => Actions.dropCreate()} component={LibraryDropList} style={sceneWithTabBarStyle} />
-              <Scene key='dropEdit' title='Edit' rightTitle="SAVE" onRight={this.onSaveDrop} component={DropEdit} style={sceneStyle} hideTabBar />
-              <Scene key='dropCreate' title='Create' rightTitle="SAVE" onRight={this.onCreateDrop} component={DropCreate} style={sceneStyle} hideTabBar />
+            {/* nearby tab */}
+            <Scene key='library' title='LIBRARY' icon={tabIcon}>
+              <Scene key='libraryDropList' title='Library' component={LibraryDropList} style={sceneStyle} />
+              <Scene key='dropEdit' title='Edit' rightTitle="Save" onRight={this.onSaveDrop} component={DropEdit} style={sceneStyle} hideTabBar />
+              <Scene key='dropCreate' title='Create' rightTitle="Save" onRight={this.onCreateDrop} component={DropCreate} style={sceneStyle} hideTabBar />
             </Scene>
           </Scene>
         </Scene>
@@ -98,25 +118,3 @@ class AppRouter extends Component {
 }
 
 export default connect()(AppRouter);
-
-const styles = {
-  navBarStyle: {
-    backgroundColor: '#212121'
-  },
-  titleStyle: {
-    color: '#fff'
-  },
-  tabStyle: {
-    backgroundColor: '#9E9E9E'
-  },
-  selectedTabStyle: {
-    backgroundColor: '#212121'
-  },
-  sceneStyle: {
-    paddingTop: 50
-  },
-  sceneWithTabBarStyle: {
-    paddingTop: 50,
-    marginBottom: 50
-  }
-};

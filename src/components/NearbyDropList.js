@@ -2,7 +2,7 @@ import _ from 'lodash';
 import React, { Component } from 'react';
 import { Actions } from 'react-native-router-flux';
 import { connect } from 'react-redux';
-import { View, ScrollView } from '@shoutem/ui';
+import { Screen } from '@shoutem/ui';
 import { initializeLocation, clearLocationReducer } from '../actions';
 import DropList from './shared/DropList';
 
@@ -28,14 +28,12 @@ class NearbyDropList extends Component {
 
   render() {
     return (
-      <View styleName="flexible">
-        <ScrollView>
-          <DropList
-            drops={this.dropList}
-            onPressRow={(drop) => Actions.dropDetail({ drop })}
-          />
-        </ScrollView>
-      </View>
+      <Screen styleName="flexible">
+        <DropList
+          drops={this.dropList}
+          onPressRow={(drop) => Actions.dropDetail({ drop })}
+        />
+      </Screen>
     );
   }
 }

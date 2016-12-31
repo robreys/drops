@@ -2,7 +2,7 @@ import _ from 'lodash';
 import React, { Component } from 'react';
 import { Actions } from 'react-native-router-flux';
 import { connect } from 'react-redux';
-import { View } from '@shoutem/ui';
+import { Screen } from '@shoutem/ui';
 import { fetchLibrary } from '../actions';
 import DropList from './shared/DropList';
 
@@ -24,12 +24,12 @@ class LibraryDropList extends Component {
 
   render() {
     return (
-      <View styleName="flexible">
-          <DropList
-            drops={this.dropList}
-            onPressRow={(drop) => Actions.dropEdit({ drop })}
-          />
-      </View>
+      <Screen styleName="flexible">
+        <DropList
+          drops={this.dropList}
+          onPressRow={(drop) => Actions.dropEdit({ drop })}
+        />
+      </Screen>
     );
   }
 }

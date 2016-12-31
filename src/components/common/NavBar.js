@@ -37,8 +37,10 @@ import {
 } from 'react-native';
 import { connect } from 'react-redux';
 import { Actions } from 'react-native-router-flux';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import _drawerImage from '../../../node_modules/react-native-router-flux/src/menu_burger.png';
 import _backButtonImage from '../../../node_modules/react-native-router-flux/src/back_chevron.png';
+import Colors from '../../resources/Colors';
 
 const styles = StyleSheet.create({
   title: {
@@ -127,7 +129,7 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   barRightButtonText: {
-    color: 'rgb(0, 122, 255)',
+    color: Colors.blue,
     textAlign: 'right',
     fontSize: 17,
   },
@@ -141,10 +143,6 @@ const styles = StyleSheet.create({
     color: 'rgb(0, 122, 255)',
     textAlign: 'left',
     fontSize: 17,
-  },
-  backButtonImage: {
-    width: 13,
-    height: 21,
   },
   rightButtonIconStyle: {
 
@@ -227,7 +225,7 @@ class NavBar extends React.Component {
         />
       );
     }
-    let buttonImage = childState.backButtonImage ||
+    const buttonImage = childState.backButtonImage ||
       state.backButtonImage || this.props.backButtonImage;
     let onPress = childState.onBack || childState.component.onBack;
     if (onPress) {
@@ -236,7 +234,7 @@ class NavBar extends React.Component {
       onPress = Actions.pop;
     }
 
-    let text = childState.backTitle ?
+    const text = childState.backTitle ?
       <Text style={textButtonStyle}>
         {childState.backTitle}
       </Text>
@@ -249,15 +247,10 @@ class NavBar extends React.Component {
         onPress={onPress}
       >
         {buttonImage && !childState.hideBackImage &&
-          <Image
-            source={buttonImage}
-            style={[
-              styles.backButtonImage,
-              this.props.leftButtonIconStyle,
-              state.barButtonIconStyle,
-              state.leftButtonIconStyle,
-              childState.leftButtonIconStyle,
-            ]}
+          <Icon
+            name="arrow-back"
+            size={20}
+            color={'#fff'}
           />
         }
         {text}

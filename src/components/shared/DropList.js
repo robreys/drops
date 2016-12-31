@@ -11,6 +11,7 @@ const renderRow = ({ drop, onPressRow }) => {
 
   return (
     <Button
+      style={{ marginBottom: 2 }}
       styleName="tight clear"
       onPress={() => onPressRow(drop)}
     >
@@ -21,8 +22,8 @@ const renderRow = ({ drop, onPressRow }) => {
         />
         <View styleName="vertical stretch space-between">
           <Subtitle>{title}</Subtitle>
+          {distance && <Caption>{distance} km away</Caption>}
           <Caption>by: {owner}</Caption>
-          <Caption>{distance} km away</Caption>
         </View>
         <Icon styleName="disclosure" name="right-arrow" />
       </Row>

@@ -1,7 +1,5 @@
 import firebase from 'firebase';
 import {
-  SET_GEOQUERY,
-  UPDATE_GEOQUERY,
   UPDATE_WATCHID,
   UPDATE_LOCATION,
   NEARBY_ADD,
@@ -16,8 +14,8 @@ const onKeyEntered = (dispatch, key, dropLocation, distance) => {
   const fbKey = geoKeyToFbKey(key);
 
   firebase.database().ref(fbKey)
-    .once('value', snapshot => {
-      const drop = { ...snapshot.val(), dropLocation, distance };
+    .on('value', snapshot => {
+      const drop = { ...snapshot.val(), distance: distance.toFixed(2) };
       dispatch({ 
         type: NEARBY_ADD, 
         payload: { key, drop }
@@ -26,6 +24,10 @@ const onKeyEntered = (dispatch, key, dropLocation, distance) => {
 };
 
 const onKeyExited = (dispatch, key) => {
+  const fbKey = geoKeyToFbKey(key);
+
+  firebase.database().ref(fbKey).off('value');
+
   dispatch({
     type: NEARBY_REMOVE,
     payload: key
@@ -38,30 +40,46 @@ const initializeGeoQuery = (dispatch, position) => {
   const rootFbRef = firebase.database().ref('/locations');
   const geoFire = new GeoFire(rootFbRef);
   const geoQuery = geoFire.query({
-    center: [latitude, longitude],
-    radius: 0.3
-  });
+      center: [latitude, longitude],
+      radius: 0.3
+    });
 
   geoQuery.on('key_entered', onKeyEntered.bind(null, dispatch));
   geoQuery.on('key_exited', onKeyExited.bind(null, dispatch));
 
-  dispatch({
-    type: SET_GEOQUERY,
-    payload: geoQuery
-  });
+  return geoQuery;
 };
 
-const onNewPosition = (dispatch, position) => {
+const onNewPosition = (dispatch, position, geoQuery) => {
   console.log(position);
+
   dispatch({
-    type: UPDATE_LOCATION,
-    payload: position.coords
-  });
+      type: UPDATE_LOCATION,
+      payload: position.coords
+    });
+
+  if (geoQuery) {
+    const { latitude, longitude } = position.coords;
+
+    geoQuery.updateCriteria({ center: [latitude, longitude] });
+  }
 };
 
 const onInitialPosition = (dispatch, position) => {
   onNewPosition(dispatch, position);
-  initializeGeoQuery(dispatch, position);
+  const geoQuery = initializeGeoQuery(dispatch, position);
+
+  // continue to watch location changes
+  const watchID = navigator.geolocation.watchPosition(
+      newPosition => onNewPosition(dispatch, newPosition, geoQuery),
+      error => console.log(error),
+      GEOLOCATION_OPTIONS
+    );
+
+  dispatch({
+    type: UPDATE_WATCHID,
+    payload: watchID
+  });
 };
 
 const GEOLOCATION_OPTIONS = {
@@ -79,25 +97,6 @@ export const initializeLocation = () => {
         error => console.log(error),
         GEOLOCATION_OPTIONS
       );
-
-    // continue to watch location changes
-    const watchID = navigator.geolocation.watchPosition(
-        onNewPosition.bind(null, dispatch),
-        error => console.log(error),
-        GEOLOCATION_OPTIONS
-      );
-
-    dispatch({
-      type: UPDATE_WATCHID,
-      payload: watchID
-    });
-  };
-};
-
-export const updateGeoQuery = () => {
-  return {
-    type: UPDATE_GEOQUERY,
-    payload: null
   };
 };
 
